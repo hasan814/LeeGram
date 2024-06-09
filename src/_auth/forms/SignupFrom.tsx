@@ -14,9 +14,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import Loader from "@/components/shared/Loader";
 
 const SignupFrom = () => {
-  const isLoading = true;
+  const isLoading = false;
   // ========== Define your form ============
   const form = useForm<z.infer<typeof SignupValidation>>({
     resolver: zodResolver(SignupValidation),
@@ -40,7 +41,7 @@ const SignupFrom = () => {
           Create a New account
         </h2>
         <p className="text-light-3 small-medium md:base-regular mt-2">
-          To use LeeGram plase enter your details
+          To use LeeGram please enter your details
         </p>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -100,7 +101,10 @@ const SignupFrom = () => {
           />
           <Button type="submit" className="shad-button_primary">
             {isLoading ? (
-              <div className="flex-center gap-2">Loading...</div>
+              <div className="flex-center gap-2">
+                <Loader />
+                Loading ...
+              </div>
             ) : (
               "Sign Up"
             )}
