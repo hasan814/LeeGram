@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router-dom";
+import { Toaster } from "@/components/ui/toaster";
 import { Home } from "./_root/pages";
 
 import SigninFrom from "./_auth/forms/SigninFrom";
@@ -13,8 +14,8 @@ const App = () => {
       <Routes>
         {/* public routes */}
         <Route element={<AuthLayout />}>
-          <Route path="/sign-in" element={<SigninFrom />} />
-          <Route path="/sign-up" element={<SignupFrom />} />
+          <Route path="/signin" element={<SigninFrom />} />
+          <Route path="/signup" element={<SignupFrom />} />
         </Route>
 
         {/* private Routes */}
@@ -22,6 +23,7 @@ const App = () => {
           <Route index element={<Home />} />
         </Route>
       </Routes>
+      <Toaster />
     </main>
   );
 };

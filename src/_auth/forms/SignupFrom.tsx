@@ -1,7 +1,13 @@
 "use client";
 
+import {
+  useCreateUserAccount,
+  useSignInAccount,
+} from "@/lib/react-query/queriesAndMutations";
 import { SignupValidation } from "@/lib/validation";
+import { signInAccount } from "@/lib/appwrite/api";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useToast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,10 +21,20 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+
 import Loader from "@/components/shared/Loader";
 
 const SignupFrom = () => {
-  const isLoading = false;
+  // ========== Toaster ============
+  const { toast } = useToast();
+
+  // ========== Mutation ============
+  const { mutateAsync: createUserAccount, isLoading: isCreatingUser } =
+    useCreateUserAccount();
+
+  const { mutateAsync: signInAccount, isLoading: isSigningIn } =
+    useSignInAccount();
+
   // ========== Define your form ============
   const form = useForm<z.infer<typeof SignupValidation>>({
     resolver: zodResolver(SignupValidation),
@@ -30,9 +46,15 @@ const SignupFrom = () => {
     },
   });
 
-  // ========= Define a submit handler =========
-  function onSubmit(values: z.infer<typeof SignupValidation>) {
-    console.log(values);
+  // =============== Function =================
+  async function onSubmit(values: z.infer<typeof SignupValidation>) {
+    const newUser = await createUserAccount(values);
+    if (!newUser) return toast({ title: "Sign up Faild. Please try again!" });
+    const session = await signInAccount({
+      email: values.email,
+      password: values.password,
+    });
+    if (!session) return toast({ title: "Sign in Failed. Please try again ." });
   }
   return (
     <Form {...form}>
@@ -101,7 +123,7 @@ const SignupFrom = () => {
             )}
           />
           <Button type="submit" className="shad-button_primary">
-            {isLoading ? (
+            {isCreatingUser ? (
               <div className="flex-center gap-2">
                 <Loader />
                 Loading ...
