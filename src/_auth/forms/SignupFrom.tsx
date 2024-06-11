@@ -4,14 +4,14 @@ import {
   useCreateUserAccount,
   useSignInAccount,
 } from "@/lib/react-query/queriesAndMutations";
+import { Link, useNavigate } from "react-router-dom";
 import { SignupValidation } from "@/lib/validation";
-import { signInAccount } from "@/lib/appwrite/api";
+import { useUserContext } from "@/context/AuthContext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
 import { z } from "zod";
 import {
   Form,
@@ -28,11 +28,17 @@ const SignupFrom = () => {
   // ========== Toaster ============
   const { toast } = useToast();
 
+  // ========== Navigate ============
+  const navigate = useNavigate();
+
+  // ========== Context ============
+  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+
   // ========== Mutation ============
-  const { mutateAsync: createUserAccount, isLoading: isCreatingUser } =
+  const { mutateAsync: createUserAccount, isPending: isCreatingAccount } =
     useCreateUserAccount();
 
-  const { mutateAsync: signInAccount, isLoading: isSigningIn } =
+  const { mutateAsync: signInAccount, isPending: isSigningIn } =
     useSignInAccount();
 
   // ========== Define your form ============
@@ -54,7 +60,12 @@ const SignupFrom = () => {
       email: values.email,
       password: values.password,
     });
+
     if (!session) return toast({ title: "Sign in Failed. Please try again ." });
+    const isLoggedIn = await checkAuthUser();
+    console.log(isLoggedIn);
+    if (isLoggedIn) form.reset(), navigate("/");
+    else return toast({ title: "Sign up failed.Please try again." });
   }
   return (
     <Form {...form}>
@@ -123,7 +134,7 @@ const SignupFrom = () => {
             )}
           />
           <Button type="submit" className="shad-button_primary">
-            {isCreatingUser ? (
+            {isCreatingAccount ? (
               <div className="flex-center gap-2">
                 <Loader />
                 Loading ...
@@ -135,7 +146,7 @@ const SignupFrom = () => {
           <p className="text-small-regular text-light-2 text-center mt-2">
             Already have an accout?{" "}
             <Link
-              to={"/sign-in"}
+              to={"/signin"}
               className="text-primary-500 text-small-semibold ml-1"
             >
               Log in

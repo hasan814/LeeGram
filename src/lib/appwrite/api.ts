@@ -32,8 +32,8 @@ export async function saveUserToDB(user: {
   accountId: string;
   email: string;
   name: string;
-  imageUrl: URL;
   username?: string;
+  imageUrl: URL;
 }) {
   try {
     const newUser = await databases.createDocument(

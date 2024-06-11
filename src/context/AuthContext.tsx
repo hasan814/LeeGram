@@ -32,15 +32,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // =========== Navigate ===========
   const navigate = useNavigate();
 
-  // =========== Effect ===========
-  useEffect(() => {
-    if (
-      localStorage.getItem("cookieFallback") === "[]" ||
-      localStorage.getItem("cookieFallback") === null
-    )
-      navigate("/signin");
-  }, [navigate]);
-
   // =========== Function ===========
   const checkAuthUser = async () => {
     try {
@@ -65,6 +56,12 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setIsLoading(false);
     }
   };
+
+  // =========== Effect ===========
+  useEffect(() => {
+    if (localStorage.getItem("cookieFallback") === "[]") navigate("/signin");
+    checkAuthUser();
+  }, []);
 
   // =========== Constant ===========
   const value = {
